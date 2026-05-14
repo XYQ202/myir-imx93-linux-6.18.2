@@ -1059,11 +1059,21 @@ static int lt9611_probe(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-	lt9611 = devm_kzalloc(dev, sizeof(*lt9611), GFP_KERNEL);
-	if (!lt9611)
-		return -ENOMEM;
+	// lt9611 = devm_kzalloc(dev, sizeof(*lt9611), GFP_KERNEL);
+	// if (!lt9611)
+	// 	return -ENOMEM;
 
-	lt9611->dev = &client->dev;
+	lt9611 = devm_drm_bridge_alloc(dev, struct lt9611, bridge,
+				       &lt9611_bridge_funcs);
+	if (IS_ERR(lt9611))
+		return PTR_ERR(lt9611);
+
+	// lt9611->dev = &client->dev;
+	// lt9611->client = client;
+	// lt9611->sleep = false;
+
+	// lt9611 = bridge_to_lt9611(bridge);
+	lt9611->dev = dev;
 	lt9611->client = client;
 	lt9611->sleep = false;
 
@@ -1111,7 +1121,7 @@ static int lt9611_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, lt9611);
 
-	lt9611->bridge.funcs = &lt9611_bridge_funcs;
+	// lt9611->bridge.funcs = &lt9611_bridge_funcs;
 	lt9611->bridge.of_node = client->dev.of_node;
 	lt9611->bridge.ops = DRM_BRIDGE_OP_DETECT | DRM_BRIDGE_OP_EDID |
 			     DRM_BRIDGE_OP_HPD | DRM_BRIDGE_OP_MODES;
